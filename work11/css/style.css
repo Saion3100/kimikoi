@@ -1,0 +1,79 @@
+@charset "UTF-8";
+html{
+    overflow: auto;
+}
+body{
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: serif;
+    color: #000;
+    background-color: #fff;
+}
+#screen{
+    position: relative;
+    width: 900px;
+    height: 675px;
+    margin: 20px auto;
+    background-color: #000;
+    overflow: hidden;
+}
+#bgimg{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    object-fit: cover;
+}
+.charaposition{
+    position: absolute;
+    width: 300px;
+    height: 675px;
+    top: 20px;
+    text-align: center;
+    overflow: hidden;
+    z-index: 2;
+    background-color: #555;/*後で消す*/
+    opacity: .5;/*後で消す*/
+}
+
+#charaposition1{/*一人、三人表示*/
+    left: 300px;
+}
+#charaposition2{/*二人表示*/
+    left: 140px;
+}
+#charaposition3{/*二人表示*/
+    left: 460px;
+}
+#charaposition4{/*三人表示*/
+    left: 0;
+}
+#charaposition5{/*三人表示*/
+    left: 600px;
+}
+
+#messbox{
+    position: absolute;
+    opacity: 0.8;
+    width: 850px;
+    height: 160px;
+    top: 460px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    background-color: #fff;
+    border: double 10px #000;
+    z-index: 3;
+}
+
+#textbox{
+    width: 800px;
+    height: 140px;
+    margin: -10px auto;
+}
+#text{
+    color: #000;
+    font-size: 1.5rem;
+    font-family: serif;
+}
