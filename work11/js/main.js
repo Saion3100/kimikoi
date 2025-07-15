@@ -1,8 +1,7 @@
 
 window.addEventListener('load',function(){
-
-    
-    
+    console.log("読み込まれた text 配列：", window.ScenarioData.text);
+ const text = window.ScenarioData.text;
     var mess_box = this.document.getElementById('textbox');
     var mess_text = this.document.getElementById('text');
     var mswin_flg = true;
@@ -10,18 +9,21 @@ window.addEventListener('load',function(){
     var end_flg = false;
     var scene_cnt = 0;
     var line_cnt = 0;
+    var split_chars = [];
+    const lINTERVA = 60; //文字送りの速さ
 
-    var text = [];
 
-    //シナリオを配列に保管、カンマ区切り=クリック回数
-    text[0] = ["俺の名前はハーレム・太郎だ☆",
-        "俺はこの君恋学園の三年生だ。",
-        "なんでこんなに騒がしいかって？",
-        "それは７日後に開催される君恋学園一大イベントの",
-        "文化祭があるんだ！",
-        "今日からその準備で授業はないからこんなに騒がしいってわけ☆"
-    ];
-
+    function main(){
+        var tmp = split_chars.shift();
+        if(tmp !== undefined) {
+            if (!stop_flg) {
+                mess_text.innerHTML += tmp;
+                setTimeout(main, lINTERVA);
+            } else {
+                mess_text.innerHTML += '<span class="blink-text"></span>';
+            }
+         }
+    }
 
     //文字送りのメソッド
     mess_box.addEventListener('click',function(){
@@ -34,12 +36,16 @@ window.addEventListener('load',function(){
             line_cnt++;
             if(line_cnt >= text[scene_cnt].length){
                 line_cnt = 0;
+                //scene_cnt++;
             }
            }else if(scene_cnt >= text.length){
             end_flg = true;
             return;
            }
         }
+        split_chars=text[scene_cnt][line_cnt].split('');
+        mess_text.innerHTML='';
+        main();
     })
 });
 
