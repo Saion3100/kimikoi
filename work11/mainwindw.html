@@ -2,8 +2,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/style.css">
     <title>kimikoi</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -14,13 +12,31 @@
 
 <body>
     <div id="screen">
-        <img src="img/学校素材.jpg" alt="" id="bgimg">
-        <div id="messbox">
-            <div id="textbox">
+        <!-- 背景画像 -->
+        <img src="img/bg0.png" alt="" id="bgimg">
+
+        <!-- スタートメニュー -->
+        <div id="menu">
+            <button id="startBtn">スタート</button>
+        </div>
+
+        <!-- 名前入力画面 -->
+        <div id="nameInputScreen" class="none" style="text-align:center; margin-top: 200px;">
+            <label for="playerName">主人公の名前を入力してください:</label><br>
+            <input type="text" id="playerName" maxlength="10" style="font-size:1.2em; padding:5px;">
+            <br><br>
+            <button id="nameConfirmBtn" style="font-size:1.2em; padding: 10px 20px; cursor:pointer;">決定</button>
+        </div>
+
+        <!-- メッセージボックス -->
+        <div id="messbox" class="none">
+            <div id="namebox"><span id="charaname"></span></div>
+            <div id="textbox" class="none">
                 <p id="text"></p>
             </div>
         </div>
 
+        <!-- 選択肢 -->
         <div class="selectBox">
             <div class="select" id="select1">
                 <p class="selectText" id="selectText1"></p>
@@ -34,9 +50,10 @@
         </div>
     </div>
 
+    <!-- キャラ表示エリア -->
     <div class="charabox">
-        <div class="charaposition" id="charaposition1"><img src="" alt="" id="chara1"></div><!--一人、三人表示-->
-        <div class="charaposition" id="charaposition2"><img src="" alt="" id="chara2"></div><!--二人表示-->
-        <div class="charaposition" id="charaposition3"><img src="" alt="" id="chara3"></div><!--二人表示-->
+        <div class="charaposition" id="charaposition1"><img src="" alt="" id="chara1"></div>
+        <div class="charaposition" id="charaposition2"><img src="" alt="" id="chara2"></div>
+        <div class="charaposition" id="charaposition3"><img src="" alt="" id="chara3"></div>
     </div>
 </body>

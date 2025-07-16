@@ -1,9 +1,15 @@
-
 window.addEventListener('load', function () {
     //console.log("読み込まれた text 配列：", window.ScenarioData.text);
     const text = window.ScenarioData.text;
+    const menu = document.getElementById('menu');
+    const startBtn = document.getElementById('startBtn');
+    const textbox = document.getElementById('textbox');
     var mess_box = this.document.getElementById('textbox');
     var mess_text = this.document.getElementById('text');
+    const nameInputScreen = document.getElementById('nameInputScreen');
+    const nameConfirmBtn = document.getElementById('nameConfirmBtn');
+    const playerNameInput = document.getElementById('playerName');
+    const charaName = document.getElementById('charaname');
     var mswin_flg = true;
     var stop_flg = false;
     var end_flg = false;
@@ -17,6 +23,33 @@ window.addEventListener('load', function () {
     var select_text1 = document.getElementById('selectText1');
     var select_text2 = document.getElementById('selectText2');
     var select_text3 = document.getElementById('selectText3');
+
+    // ＜ゲーム内変数＞
+    let playerName = '';//主人公名前保存用
+
+    textbox.classList.add('none');
+    startBtn.addEventListener('click', function () {
+        $('#menu').fadeOut(1000, function () {
+            nameInputScreen.classList.remove('none');
+            playerNameInput.focus();
+        });
+    });
+
+    nameConfirmBtn.addEventListener('click', function () {
+        const inputName = playerNameInput.value.trim();
+        if (inputName.length === 0) {
+            alert('名前を入力してください');
+            playerNameInput.focus();
+            return;
+        }
+        playerName = inputName;//名前保存
+        charaName.textContent = playerName;//表示
+
+        nameInputScreen.classList.add('none');//入力画面非表示
+        $('#messbox').removeClass('none');  // メッセージボックス表示
+        $('#textbox').removeClass('none');  // テキストボックス表示
+        textClick();
+    });
 
 
     function main() {
@@ -126,10 +159,14 @@ window.addEventListener('load', function () {
                     }
                     function fadeOutIn_bg_remove() {
                         $('#bgimg').removeClass('fadeoutin');
-                        $('#textbox').removeClass('none');
+                        $('#messbox').removeClass('fadeoutin'); // これも追加
+                        $('#textbox').removeClass('none');      // 念のため明示
+                        $('#textbox').removeClass('fadeoutin'); // アニメ除去
                         $('#textbox').trigger('click');
+
                     }
                     $('#bgimg').addClass('fadeoutin');
+                    $('#messbox').addClass('fadeoutin');
                     $('#textbox').addClass('none');
                     setTimeout(fadeOutIn_bg_change, 1500);
                     setTimeout(fadeOutIn_bg_remove, 3000);
@@ -149,15 +186,32 @@ window.addEventListener('load', function () {
         }
         //通常文字出力
         if (tmp !== undefined && !stop_flg) {
+            if (mess_box.innerHTML === '') {
+                const currentLine = text[scene_cnt][line_cnt];
+                if (currentLine.includes(':')) {
+                    const [speaker, dialogue] = currentLine.split(':');
+
+                    //キャラ名表示
+                    if (speaker === '主人公') {
+                        document.getElementById('namebox').textContent = playerName;
+                    } else {
+                        document.getElementById('namebox').textContent = speaker;
+                    }
+                    split_chars = dialogue.split('');
+                    mess_text.innerHTML = ''; // 念のためリセット
+                } else {
+                    // 名前がない行はキャラ名非表示
+                    document.getElementById('namebox').textContent = '';
+                    split_chars = currentLine.split('');
+                    mess_text.innerHTML = '';
+                }
+            }
             mess_text.innerHTML += tmp;
             setTimeout(main, lINTERVA);
         } else {
             mess_text.innerHTML += '<span class="blink-text"></span>';
         }
     }
-
-
-
 
     //文字送りのメソッド
     mess_box.addEventListener('click', function () {
