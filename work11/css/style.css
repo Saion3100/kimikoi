@@ -145,3 +145,58 @@ body {
 .none {
     display: none;
 }
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.fadein {
+    animation-name: fadein;
+    animation-fill-mode: forwards;
+    animation-duration: .5s;
+    animation-timing-function: ease;
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.fadeout {
+    animation-name: fadeout;
+    animation-fill-mode: forwards;
+    animation-duration: .5s;
+    animation-timing-function: ease;
+}
+
+@keyframes fadeoutin {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.fadeoutin {
+    animation-name: fadeoutin;
+    animation-fill-mode: forwards;
+    animation-duration: 3s;
+    animation-timing-function: ease;
+}

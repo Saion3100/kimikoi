@@ -88,6 +88,7 @@ window.addEventListener('load', function () {
                     }
                     break;
                 case 'break':
+                    //改行
                     mess_text.innerHTML += '<br>';
                     break;
                 case 'skip':
@@ -96,6 +97,52 @@ window.addEventListener('load', function () {
                     break;
                 case 'stop':
                 //エンディングに飛ばしたい。
+                case 'bg':
+                    //スチル生成
+                    document.getElementById('bgimg').src = 'img/bg' + tagget_str[1] + '.jpg';
+                    break;
+                case 'chara':
+                    //キャラ生成
+                    document.getElementById('chara' + tagget_str[1]).src = 'img/chara' + tagget_str[2] + '.png';
+                    break;
+                case 'fadeIn_chara':
+                    function fadeIn_chara_remove() {
+                        $('#charaposition' + tagget_str[1]).removeClass('fadein');
+                    }
+                    $('#charaposition' + tagget_str[1]).addClass('fadein');
+                    setTimeout(fadeIn_chara_remove, 500);
+                    break;
+                case 'fadeOut_chara':
+                    function fadeOut_chara_remove() {
+                        $('#charaposition' + tagget_str[1]).removeClass('fadeout');
+                        document.getElementById('chara' + tagget_str[1]).src = 'img/chara' + tagget_str[2] + '.png';
+                    }
+                    $('#charaposition' + tagget_str[1]).addClass('fadeout');
+                    setTimeout(fadeOut_chara_remove, 500);
+                    break;
+                case 'fadeOutIn_bg':
+                    function fadeOutIn_bg_change() {
+                        document.getElementById('bgimg').src = 'img/bg' + tagget_str[1] + '.jpg';
+                    }
+                    function fadeOutIn_bg_remove() {
+                        $('#bgimg').removeClass('fadeoutin');
+                        $('#textbox').removeClass('none');
+                        $('#textbox').trigger('click');
+                    }
+                    $('#bgimg').addClass('fadeoutin');
+                    $('#textbox').addClass('none');
+                    setTimeout(fadeOutIn_bg_change, 1500);
+                    setTimeout(fadeOutIn_bg_remove, 3000);
+                    break;
+                case 'fadeIn_bg':
+                    function fadeIn_bg_remove() {
+                        $('#bgimg').removeClass('fadein');
+                    }
+                    $('#bgimg').addClass('fadein');
+                    setTimeout(fadeIn_bg_remove, 500);
+                    break;
+
+
             }
             setTimeout(main, lINTERVA);
             return;
