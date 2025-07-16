@@ -52,8 +52,15 @@ window.addEventListener('load', function () {
     });
 
 
-    function main() {
+      function main() {
+        
+        if (split_chars.length === 0) {
+            mess_text.innerHTML += '<span class="blink-text"></span>';
+            return;
+        }
+
         var tmp = split_chars.shift();
+
         //タグ処理
         if (tmp == '<') {
             let tagget_str = '';
@@ -84,11 +91,11 @@ window.addEventListener('load', function () {
                     } else {
                         select_num1 = tagget_str[1];
                         select1.addEventListener('click', function () {
-                            scene_cnt = select_num1;
-                            line_cnt = -1;
-                            $('.selectBox').removeClass('show');
-                            selectNoneRemove();
-                            textClick();
+                            scene_cnt = Number(select_num1);
+                             line_cnt = 0;
+                             $('.selectBox').removeClass('show');
+                             selectNoneRemove();
+                             setTimeout(() => textClick(), 0);
                         });
                     }
                     break;
@@ -98,11 +105,11 @@ window.addEventListener('load', function () {
                     } else {
                         select_num2 = tagget_str[1];
                         select2.addEventListener('click', function () {
-                            scene_cnt = select_num2;
-                            line_cnt = -1;
-                            $('.selectBox').removeClass('show');
-                            selectNoneRemove();
-                            textClick();
+                         scene_cnt = Number(select_num2);
+                          line_cnt = 0;
+                         $('.selectBox').removeClass('show');
+                          selectNoneRemove();
+                          setTimeout(() => textClick(), 0);
                         });
                     }
                     break;
@@ -112,24 +119,27 @@ window.addEventListener('load', function () {
                     } else {
                         select_num3 = tagget_str[1];
                         select3.addEventListener('click', function () {
-                            scene_cnt = select_num3;
-                            line_cnt = -1;
-                            $('.selectBox').removeClass('show');
-                            selectNoneRemove();
-                            textClick();
+                        scene_cnt = Number(select_num3);
+                         line_cnt = 0;
+                        $('.selectBox').removeClass('show');
+                         selectNoneRemove();
+                         setTimeout(() => textClick(), 0);
                         });
                     }
                     break;
                 case 'break':
                     //改行
                     mess_text.innerHTML += '<br>';
-                    break;
+                    setTimeout(main, lINTERVA);
+                    return;
                 case 'skip':
                     scene_cnt = tagget_str[1];
-                    line_cnt = -1;
-                    break;
+                     line_cnt = 0;
+                    textClick();
+                    return;
                 case 'stop':
-                //エンディングに飛ばしたい。
+                    //エンディングに飛ばしたい。
+                    break;
                 case 'bg':
                     //スチル生成
                     document.getElementById('bgimg').src = 'img/bg' + tagget_str[1] + '.jpg';
@@ -159,11 +169,10 @@ window.addEventListener('load', function () {
                     }
                     function fadeOutIn_bg_remove() {
                         $('#bgimg').removeClass('fadeoutin');
-                        $('#messbox').removeClass('fadeoutin'); // これも追加
-                        $('#textbox').removeClass('none');      // 念のため明示
-                        $('#textbox').removeClass('fadeoutin'); // アニメ除去
+                        $('#messbox').removeClass('fadeoutin');
+                        $('#textbox').removeClass('none');
+                        $('#textbox').removeClass('fadeoutin');
                         $('#textbox').trigger('click');
-
                     }
                     $('#bgimg').addClass('fadeoutin');
                     $('#messbox').addClass('fadeoutin');
@@ -172,78 +181,77 @@ window.addEventListener('load', function () {
                     setTimeout(fadeOutIn_bg_remove, 3000);
                     break;
                 case 'fadeIn_bg':
-                    function fadeIn_bg_remove() {
-                        $('#bgimg').removeClass('fadein');
+                    function fadeIn_bg_remove(){
+                    $('#bgimg').removeClass('fadein');
+                    $('#messbox').removeClass('fadein');
                     }
-                    $('#bgimg').addClass('fadein');
-                    setTimeout(fadeIn_bg_remove, 500);
-                    break;
-
-
+                     $('#bgimg').addClass('fadein');
+                     $('#messbox').removeClass('fadein');
+                     setTimeout(fadeIn_bg_remove,500);
+                     break;
             }
             setTimeout(main, lINTERVA);
             return;
         }
-        //通常文字出力
-        if (tmp !== undefined && !stop_flg) {
-            if (mess_box.innerHTML === '') {
-                const currentLine = text[scene_cnt][line_cnt];
-                if (currentLine.includes(':')) {
-                    const [speaker, dialogue] = currentLine.split(':');
 
-                    //キャラ名表示
-                    if (speaker === '主人公') {
-                        document.getElementById('namebox').textContent = playerName;
-                    } else {
-                        document.getElementById('namebox').textContent = speaker;
-                    }
-                    split_chars = dialogue.split('');
-                    mess_text.innerHTML = ''; // 念のためリセット
-                } else {
-                    // 名前がない行はキャラ名非表示
-                    document.getElementById('namebox').textContent = '';
-                    split_chars = currentLine.split('');
-                    mess_text.innerHTML = '';
-                }
-            }
-            mess_text.innerHTML += tmp;
-            setTimeout(main, lINTERVA);
-        } else {
-            mess_text.innerHTML += '<span class="blink-text"></span>';
-        }
+        //通常文字出力
+        mess_text.innerHTML += tmp;
+        setTimeout(main, lINTERVA);
     }
 
     //文字送りのメソッド
-    mess_box.addEventListener('click', function () {
-        //シナリオが終了したら文字送りをしない
-        if (end_flg) return;
-
-        //テキストの文字送り
-        if (mswin_flg) {
-            if (!stop_flg) {
-                line_cnt++;
-                if (line_cnt >= text[scene_cnt].length) {
-                    line_cnt = 0;
-                    //scene_cnt++;
-                }
-            } else if (scene_cnt >= text.length) {
-                end_flg = true;
-                return;
-            }
-
-            split_chars = text[scene_cnt][line_cnt].split('');
-            mess_text.innerHTML = '';
-            main();
-        }
-    });
+   mess_box.addEventListener('click', function () {
+    if (end_flg) return;
+    if (mswin_flg) {
+        textClick(); // ← ここだけでOK
+    }
+});
 
     function textClick() {
-        $('#textbox').trigger('click');
+    
+   if (!text[scene_cnt] || !text[scene_cnt][line_cnt]) return;
+
+    const currentLine = text[scene_cnt][line_cnt];
+    const namebox = document.getElementById('namebox');
+
+    if (currentLine.includes(':')) {
+        const [rawSpeaker, dialogue] = currentLine.split(':');
+        const speaker = rawSpeaker.trim();
+
+        if (speaker === '主人公') {
+            namebox.innerHTML = `<strong style="font-size:1.6rem;">${playerName}</strong>`;
+        } else {
+            namebox.innerHTML = `<strong style="font-size:1.6rem;">${speaker}</strong>`;
+        }
+
+        split_chars = [...dialogue];
+    } else {
+        namebox.innerHTML = '';
+        split_chars = [...currentLine];
     }
+
+    mess_text.innerHTML = ''; // 表示をリセット
+    main(); // 処理スタート
+
+    //タグのみ行は別実行
+      processTagOnlyLine();
+    
+    line_cnt++;
+}
+
+function processTagOnlyLine() {
+    // もしセリフが存在しないか空なら return
+    while (
+        split_chars.length > 0 &&
+        split_chars[0] === '<'
+    ) {
+        main();
+    }
+}
+    
     function selectNoneRemove() {
         $('#select1').removeClass('none');
         $('#select2').removeClass('none');
         $('#select3').removeClass('none');
     }
 });
-
