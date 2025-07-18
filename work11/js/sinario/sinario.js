@@ -29,7 +29,7 @@ window.ScenarioData = {
         "主人公:やべっ、このまま歩いてたら学校に遅れちまう！！",
         "俺はカップルを追い越し歩道を駆け抜けるのだった",
         "　　　　　　　　　　　君とつくる恋のかたち　　　　　　　　",
-        "<select1 1><select2 2><select3 none><text1 教室><text2 家><selectBox>    どこへ行く？"
+        "<select1 1><select2 2><select3 none><text1 教室><text2 家><selectBox>  どこへ向かう？"
     ],
     [
         //text[1]
@@ -42,8 +42,7 @@ window.ScenarioData = {
     [
         //text[3]
         "<fadeOutIn_bg 2>",
-        "",
-        "がら",
+        "ガラッ",
         "<chara 1 5><fadeIn_chara 1 5>担任:みんな席につけ～",
         "担任:出席とるぞ～今日休みのやつ手を挙げろ～いねぇなぁ",
         "担任:まぁ学校行事で休むようなバカはいねぇよなぁ",
