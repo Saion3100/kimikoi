@@ -13,10 +13,6 @@ body {
     background-color: #fff;
 }
 
-.none {
-    display: none;
-}
-
 #menu {
     position: absolute;
     top: 0;
@@ -98,6 +94,16 @@ body {
     object-fit: cover;
 }
 
+.itembox {
+    position: absolute;
+    width: 580px;
+    height: 420px;
+    top: 30px;
+    left: 160px;
+    text-align: center;
+    z-index: 2;
+}
+
 .charaposition {
     position: absolute;
     width: 300px;
@@ -114,45 +120,27 @@ body {
 
 #charaposition1 {
     /*一人、三人表示*/
-    left: 50%;
-    /* 900pxの画面幅の1/3 */
-    transform: translateX(-50%);
+    left: 300px;
 }
 
 #charaposition2 {
     /*二人表示*/
-    left: 31%;
-    /* 2人のときの左側 */
-    transform: translateX(-50%);
+    left: 140px;
 }
 
 #charaposition3 {
     /*二人表示*/
-    left: 69%;
-    /* 2人のときの右側 */
-    transform: translateX(-50%);
+    left: 460px;
 }
 
 #charaposition4 {
     /*三人表示*/
-    left: 25%;
+    left: 0;
 }
 
 #charaposition5 {
     /*三人表示*/
-    left: 70%;
-    /* 3人のときの右 */
-    transform: translateX(-50%);
-}
-
-/* キャラ画像サイズ調整 */
-.charaposition img {
-    max-height: 90vh;
-    /* 画面高の90%まで縮小 */
-    height: auto;
-    width: auto;
-    object-fit: contain;
-    display: block;
+    left: 600px;
 }
 
 #messbox {
@@ -177,7 +165,7 @@ body {
 
 #text {
     color: #000;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-family: serif;
 }
 
@@ -187,7 +175,6 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(255, 255, 255, .5);
-    z-index: 10;
     display: none;
 }
 
