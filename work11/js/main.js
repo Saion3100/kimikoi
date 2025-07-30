@@ -28,6 +28,9 @@ window.addEventListener('load', function () {
     let currentMessage = '';
     let waitingForClick = false;
     let textTimer;
+    let skip_flg = false;//skipタグ使用中かどうか
+    let mainLoopPending = false;   // mainが予約中かどうか
+    let skipNextLine = false;      // skipによるジャンプ後のmain呼び出し制御用
 
     // ＜ゲーム内変数＞
     let playerName = '';//主人公名前保存用
@@ -67,6 +70,9 @@ window.addEventListener('load', function () {
     function main() {
         console.log("main_call");
 
+        if (mainLoopPending) return;
+        mainLoopPending = true;
+
         // 全てのタグを先に処理
         while (split_chars[0] && split_chars[0].startsWith('<') && split_chars[0].endsWith('>')) {
             const tag = split_chars.shift();
@@ -81,7 +87,8 @@ window.addEventListener('load', function () {
                 line_cnt = 0;
             }
             split_chars = parseLine(text[scene_cnt][line_cnt]);
-            main();
+            mainLoopPending = false; // 再入可能にしておく
+            setTimeout(main, 0);     // 次のmainを非同期実行
             return;
         }
 
@@ -120,8 +127,18 @@ window.addEventListener('load', function () {
         charIndex = 0;
         waitingForClick = false;
 
-        // 文字送り開始
-        textAdvance();
+        //skipタグフラグ確認
+        if (skip_flg) {
+            skip_flg = false;
+            setTimeout(() => {
+                textAdvance();
+                mainLoopPending = false;
+            }, 0);
+        } else {
+            // 文字送り開始
+            textAdvance();
+            mainLoopPending = false;
+        }
     }
 
     //タグと文字列を分離
@@ -172,10 +189,14 @@ window.addEventListener('load', function () {
                     select_num1 = tagget_str[1];
                     select1.addEventListener('click', function () {
                         scene_cnt = select_num1;
-                        line_cnt = -1;
+                        line_cnt = 0;
                         $('.selectBox').removeClass('show');
                         selectNoneRemove();
-                        textClick();
+
+                        split_chars = parseLine(text[scene_cnt][line_cnt]);
+                        mess_text.innerHTML = '';
+                        skip_flg = true; // スキップ直後として扱う
+                        main();
                     });
                 }
                 break;
@@ -186,10 +207,14 @@ window.addEventListener('load', function () {
                     select_num2 = tagget_str[1];
                     select2.addEventListener('click', function () {
                         scene_cnt = select_num2;
-                        line_cnt = -1;
+                        line_cnt = 0;
                         $('.selectBox').removeClass('show');
                         selectNoneRemove();
-                        textClick();
+
+                        split_chars = parseLine(text[scene_cnt][line_cnt]);
+                        mess_text.innerHTML = '';
+                        skip_flg = true; // スキップ直後として扱う
+                        main();
                     });
                 }
                 break;
@@ -200,10 +225,14 @@ window.addEventListener('load', function () {
                     select_num3 = tagget_str[1];
                     select3.addEventListener('click', function () {
                         scene_cnt = select_num3;
-                        line_cnt = -1;
+                        line_cnt = 0;
                         $('.selectBox').removeClass('show');
                         selectNoneRemove();
-                        textClick();
+
+                        split_chars = parseLine(text[scene_cnt][line_cnt]);
+                        mess_text.innerHTML = '';
+                        skip_flg = true; // スキップ直後として扱う
+                        main();
                     });
                 }
                 break;
@@ -211,9 +240,10 @@ window.addEventListener('load', function () {
                 mess_text.innerHTML += '<br>';
                 break;
             case 'skip':
-                scene_cnt = tagget_str[1];
-                line_cnt = -1;
-                waitingForClick = true;
+                scene_cnt = Number(tagget_str[1]);
+                line_cnt = 0;
+                split_chars = parseLine(text[scene_cnt][line_cnt]);
+                skip_flg = true;
                 break;
             case 'bg':
                 document.getElementById('bgimg').src = 'img/bg' + tagget_str[1] + '.jpg';
