@@ -111,9 +111,9 @@ window.addEventListener('load', function () {
         // 名前表示
         if (name) {
             if (name === '主人公') {
-                namebox.textContent = `【${playerName.toUpperCase()}】`;
+                namebox.textContent = `【${playerName}】`;
             } else {
-                namebox.textContent = `【${name.toUpperCase()}】`;
+                namebox.textContent = `【${name}】`;
             }
             namebox.style.fontWeight = 'bold';
             namebox.style.fontSize = '1.6rem';
