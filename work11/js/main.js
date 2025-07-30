@@ -8,7 +8,6 @@ window.addEventListener('load', function () {
     const nameConfirmBtn = document.getElementById('nameConfirmBtn');//確認ボタン
     const playerNameInput = document.getElementById('playerName');//テキスト入力
     var mswin_flg = true;
-    var stop_flg = false;
     var end_flg = false;
     var scene_cnt = 0;//シナリオ番号
     var line_cnt = 0;//シナリオポインタ
@@ -30,15 +29,23 @@ window.addEventListener('load', function () {
     let textTimer;
     let skip_flg = false;//skipタグ使用中かどうか
     let mainLoopPending = false;   // mainが予約中かどうか
-    let skipNextLine = false;      // skipによるジャンプ後のmain呼び出し制御用
 
     // ＜ゲーム内変数＞
     let playerName = '';//主人公名前保存用
+    let adoLove = 0; //あど好感度
+    let kamiLove = 0;  //かみらい好感度
+    const LOVE_MAX = 100; //好感度最大値
 
     textbox.classList.add('none');//テキストボックス非表示
 
     //スタートボタン押したとき
     startBtn.addEventListener('click', function () {
+
+        // 好感度をリセット（ゲーム再スタート時）
+        adoLove = 0;
+        kamiLove = 0;
+        saveLove();
+
         $('#menu').fadeOut(1000, function () {
             nameInputScreen.classList.remove('none');//名前入力画面表示
             playerNameInput.focus();
@@ -322,6 +329,29 @@ window.addEventListener('load', function () {
                 $('#messbox').removeClass('none');  // メッセージボックス表示
                 $('#textbox').removeClass('none');  // テキストボックス表示
                 break;
+            case 'like': //好感度
+                const target = tagget_str[1]; // ado or kami
+                const amount = Number(tagget_str[2]) || 0;
+                adjustLove(target, amount);
+                break;
+            case 'checkEnd':
+                // 好感度によってエンディングへジャンプ
+                if (adoLove >= 20 && kamiLove >= 20) {
+                    goEnding(5); // ハーレム
+                } else if (adoLove >= 15) {
+                    goEnding(3); // あどエンド
+                } else if (kamiLove >= 15) {
+                    goEnding(4); // かみらいエンド
+                } else if (adoLove < 10 && kamiLove < 10) {
+                    goEnding(2); // ボッチエンド
+                } else {
+                    goEnding(1); // エラーエンド
+                }
+                break;
+
+            case 'end':
+                showEndingImage(Number(tagget_str[1]));
+                break;
         }
     }
 
@@ -363,13 +393,74 @@ window.addEventListener('load', function () {
         }
     });
 
-    function textClick() {
-        $('#textbox').trigger('click');
+
+    // 好感度関数
+    function adjustLove(character, amount) {
+        if (character === 'ado') {
+            adoLove = Math.max(0, Math.min(LOVE_MAX, adoLove + amount));
+            console.log("ado：", adoLove, amount);
+        } else if (character === 'kami') {
+            kamiLove = Math.max(0, Math.min(LOVE_MAX, kamiLove + amount));
+            console.log("kamirai：", kamiLove, amount);
+        }
+        saveLove();
+
+        console.log(`現在の好感度 - あど: ${adoLove}, かみらい: ${kamiLove}`);
     }
+
+
+    function saveLove() {
+        sessionStorage.setItem('adoLove', adoLove);
+        sessionStorage.setItem('kamiLove', kamiLove);
+    }
+
 
     function selectNoneRemove() {
         $('#select1').removeClass('none');
         $('#select2').removeClass('none');
         $('#select3').removeClass('none');
     }
+
+    //エンディングシーン生成用
+    function goEnding(num) {
+        scene_cnt = 1;  // 仮のエンディングシーン番号
+        line_cnt = 0;
+        //endn.jpg画像で生成される
+        split_chars = [`<end ${num}>`];
+        main();
+    }
+
+    function showEndingImage(num) {
+        // UIを非表示
+        document.getElementById('messbox').classList.add('none');
+        document.getElementById('textbox').classList.add('none');
+        $('.namebox').addClass('none');
+
+        const bg = document.getElementById('bgimg');
+
+        // 背景画像を即座に切り替え、透明にしてからフェードイン
+        bg.style.opacity = 0;
+        bg.src = `img/end${num}.jpg`;
+
+        // 少し待ってからフェードイン開始
+        setTimeout(() => {
+            bg.classList.add('fade-in');
+        }, 50);
+
+        // 一定時間表示 → スタート画面へ切り替え
+        setTimeout(() => {
+            bg.style.opacity = 0; // エンディング画像を透明化
+            bg.src = 'img/bg0.png'; // 背景戻す
+            setTimeout(() => {
+                bg.classList.add('fade-in'); // フェードインでスタート画面へ
+                showStartMenu(); // スタート画面表示
+            }, 50);
+        }, 5000); // 5秒後にスタート画面へ
+    }
+
+    function showStartMenu() {
+        const menu = document.getElementById('menu');
+        menu.style.display = 'flex';
+    }
+
 });

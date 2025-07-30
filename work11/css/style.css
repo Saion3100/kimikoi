@@ -108,7 +108,7 @@ body {
     position: absolute;
     width: 300px;
     height: 675px;
-    top: 20px;
+    top: 0;
     text-align: center;
     overflow: hidden;
     z-index: 2;
@@ -272,4 +272,33 @@ body {
     animation-fill-mode: forwards;
     animation-duration: 3s;
     animation-timing-function: ease;
+}
+
+/* エンディング画像用の初期スタイル */
+#bgimg.fade-in {
+    animation: fadeIn 1s forwards;
+}
+
+#bgimg.fade-out {
+    animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
