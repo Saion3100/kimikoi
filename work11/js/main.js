@@ -74,7 +74,7 @@ window.addEventListener('load', function () {
         mainLoopPending = true;
 
         // 全てのタグを先に処理
-        while (split_chars[0] && split_chars[0].startsWith('<') && split_chars[0].endsWith('>')) {
+        while (split_chars.length && split_chars[0].startsWith('<') && split_chars[0].endsWith('>')) {
             const tag = split_chars.shift();
             const tag_str = tag.slice(1, -1); // < > を除去
             processTag(tag_str);
@@ -281,7 +281,7 @@ window.addEventListener('load', function () {
             case 'fadeOut_chara':
                 function fadeOut_chara_remove() {
                     $('#charaposition' + tagget_str[1]).removeClass('fadeout');
-                    document.getElementById('chara' + tagget_str[1]).src = 'img/chara' + tagget_str[2] + '.png';
+                    document.getElementById('chara' + tagget_str[1]).src = '';
                 }
                 $('#charaposition' + tagget_str[1]).addClass('fadeout');
                 setTimeout(fadeOut_chara_remove, 500);
