@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
     var end_flg = false;
     var scene_cnt = 0;//シナリオ番号
     var line_cnt = 0;//シナリオポインタ
-    const interval = 60;//文字送りの速さ
+    const INTERVAL = 60;//文字送りの速さ
     var select_num1 = 0;
     var select_num2 = 0;
     var select_num3 = 0;
@@ -52,6 +52,7 @@ window.addEventListener('load', function () {
         });
     });
 
+    //主人公名前入力
     nameConfirmBtn.addEventListener('click', function () {
         console.log("nameconfirmbtn_call");
         const inputName = playerNameInput.value.trim();
@@ -61,11 +62,11 @@ window.addEventListener('load', function () {
             return;
         }
         playerName = inputName;//名前保存
-        /// charaName.textContent = playerName;//キャラ名表示
         console.log("主人公名前：", playerName);
         nameInputScreen.classList.add('none');//入力画面非表示
         messbox.classList.remove('none');
         textbox.classList.remove('none');
+        //シナリオ初期化
         line_cnt = 0;
         scene_cnt = 0;
         mess_text.innerHTML = '';
@@ -362,7 +363,7 @@ window.addEventListener('load', function () {
         if (charIndex < currentMessage.length) {
             mess_text.innerHTML += currentMessage.charAt(charIndex);
             charIndex++;
-            textTimer = setTimeout(textAdvance, interval);
+            textTimer = setTimeout(textAdvance, INTERVAL);
         } else {
             // 文字送り終了、クリック待ち状態に
             waitingForClick = true;
