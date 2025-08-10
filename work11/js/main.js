@@ -32,7 +32,7 @@ window.addEventListener('load', function () {
 
     // ＜ゲーム内変数＞
     let playerName = '';//主人公名前保存用
-    let adoLove = 0; //あど好感度
+    let adoLove = -1; //あど好感度
     let kamiLove = 0;  //かみらい好感度
     const LOVE_MAX = 100; //好感度最大値
 
@@ -42,7 +42,7 @@ window.addEventListener('load', function () {
     startBtn.addEventListener('click', function () {
 
         // 好感度をリセット（ゲーム再スタート時）
-        adoLove = 0;
+        adoLove = -1;
         kamiLove = 0;
         saveLove();
 
@@ -123,7 +123,7 @@ window.addEventListener('load', function () {
             } else {
                 namebox.textContent = `【${name}】`;
             }
-            namebox.style.fontWeight = 'bold';
+            namebox.style.fontWeight = '900';
             namebox.style.fontSize = '1.6rem';
         } else {
             namebox.textContent = '';
@@ -316,13 +316,14 @@ window.addEventListener('load', function () {
                 }
                 function fadeOutIn_bg_remove() {
                     $('#bgimg').removeClass('fadeoutin');
-                    $('#messbox').removeClass('fadeoutin');
+                    $('#messbox').removeClass('fadeout-fast');
                     $('#textbox').removeClass('none');
                     $('#textbox').trigger('click');
                 }
-                $('#bgimg').addClass('fadeoutin');
-                $('#messbox').addClass('fadeoutin');
+                $('#messbox').addClass('fadeout-fast');
                 $('#textbox').addClass('none');
+                $('#bgimg').addClass('fadeoutin');
+                $('#messbox').addClass('fadein');
                 setTimeout(fadeOutIn_bg_change, 1500);
                 setTimeout(fadeOutIn_bg_remove, 3000);
                 break;
@@ -398,10 +399,10 @@ window.addEventListener('load', function () {
     // 好感度関数
     function adjustLove(character, amount) {
         if (character === 'ado') {
-            adoLove = Math.max(0, Math.min(LOVE_MAX, adoLove + amount));
+            adoLove = adoLove + amount;
             console.log("ado：", adoLove, amount);
         } else if (character === 'kami') {
-            kamiLove = Math.max(0, Math.min(LOVE_MAX, kamiLove + amount));
+            kamiLove = kamiLove + amount;
             console.log("kamirai：", kamiLove, amount);
         }
         saveLove();
@@ -451,7 +452,7 @@ window.addEventListener('load', function () {
         // 一定時間表示 → スタート画面へ切り替え
         setTimeout(() => {
             bg.style.opacity = 0; // エンディング画像を透明化
-            bg.src = 'img/bg0.png'; // 背景戻す
+            bg.src = 'img/bg0.jpg'; // 背景戻す
             setTimeout(() => {
                 bg.classList.add('fade-in'); // フェードインでスタート画面へ
                 showStartMenu(); // スタート画面表示
