@@ -231,7 +231,7 @@ body {
 .fadein {
     animation-name: fadein;
     animation-fill-mode: forwards;
-    animation-duration: .5s;
+    animation-duration: 0.5s;
     animation-timing-function: ease;
 }
 
@@ -280,11 +280,7 @@ body {
     animation-timing-function: ease;
 }
 
-/* エンディング画像生成用 */
-#bgimg.fade-in {
-    animation: fadeIn 1s forwards;
-}
-
-#bgimg.fade-out {
-    animation: fadeOut 1s forwards;
+.fadein-ending {
+    transition: opacity 3s ease;
+    opacity: 0;
 }

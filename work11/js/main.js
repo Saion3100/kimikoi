@@ -1,4 +1,13 @@
 window.addEventListener('load', function () {
+
+    //参照エラー対策
+    window.selectNoneRemove = function selectNoneRemove() {
+        $('#select1').removeClass('none');
+        $('#select2').removeClass('none');
+        $('#select3').removeClass('none');
+    };
+
+
     var text = window.ScenarioData.text;//シナリオデータ
     const startBtn = document.getElementById('startBtn');//スタートボタン
     var mess_box = document.getElementById('textbox');
@@ -417,17 +426,13 @@ window.addEventListener('load', function () {
     }
 
 
-    function selectNoneRemove() {
-        $('#select1').removeClass('none');
-        $('#select2').removeClass('none');
-        $('#select3').removeClass('none');
-    }
+
 
     //エンディングシーン生成用
     function goEnding(num) {
         scene_cnt = 1;  // 仮のエンディングシーン番号
         line_cnt = 0;
-        //endn.jpg画像で生成される
+        //endタグ生成
         split_chars = [`<end ${num}>`];
         main();
     }
@@ -439,25 +444,19 @@ window.addEventListener('load', function () {
         $('.namebox').addClass('none');
 
         const bg = document.getElementById('bgimg');
-
-        // 背景画像を即座に切り替え、透明にしてからフェードイン
-        bg.style.opacity = 0;
+        // エンディング画像セット＆透明
         bg.src = `img/end${num}.jpg`;
 
-        // 少し待ってからフェードイン開始
+        // 少し遅延してフェードイン
         setTimeout(() => {
-            bg.classList.add('fade-in');
+            bg.style.opacity = '1';
         }, 50);
 
-        // 一定時間表示 → スタート画面へ切り替え
+        // 表示時間 5秒後にそのままスタート画面へ
         setTimeout(() => {
-            bg.style.opacity = 0; // エンディング画像を透明化
-            bg.src = 'img/bg0.jpg'; // 背景戻す
-            setTimeout(() => {
-                bg.classList.add('fade-in'); // フェードインでスタート画面へ
-                showStartMenu(); // スタート画面表示
-            }, 50);
-        }, 5000); // 5秒後にスタート画面へ
+            bg.src = 'img/bg0.jpg';
+            showStartMenu();  // スタート画面表示
+        }, 5000);
     }
 
     function showStartMenu() {
