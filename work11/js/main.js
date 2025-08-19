@@ -16,8 +16,6 @@ window.addEventListener('load', function () {
     const nameInputScreen = document.getElementById('nameInputScreen');//名前入力画面取得
     const nameConfirmBtn = document.getElementById('nameConfirmBtn');//確認ボタン
     const playerNameInput = document.getElementById('playerName');//テキスト入力
-    var mswin_flg = true;
-    var end_flg = false;
     var scene_cnt = 0;//シナリオ番号
     var line_cnt = 0;//シナリオポインタ
     const INTERVAL = 60;//文字送りの速さ
@@ -38,20 +36,20 @@ window.addEventListener('load', function () {
     let textTimer;
     let skip_flg = false;//skipタグ使用中かどうか
     let mainLoopPending = false;   // mainが予約中かどうか
+    let end_flg = false;//エンディングへ入ったかどうか
 
     // ＜ゲーム内変数＞
     let playerName = '';//主人公名前保存用
-    let adoLove = -1; //あど好感度
+    let adoLove = 0; //あど好感度
     let kamiLove = 0;  //かみらい好感度
-    const LOVE_MAX = 100; //好感度最大値
 
     textbox.classList.add('none');//テキストボックス非表示
 
     //スタートボタン押したとき
     startBtn.addEventListener('click', function () {
-
+        console.log("gamestart_call");
         // 好感度をリセット（ゲーム再スタート時）
-        adoLove = -1;
+        adoLove = 0;
         kamiLove = 0;
         saveLove();
 
@@ -76,6 +74,7 @@ window.addEventListener('load', function () {
         messbox.classList.remove('none');
         textbox.classList.remove('none');
         //シナリオ初期化
+        end_flg = false;
         line_cnt = 0;
         scene_cnt = 0;
         mess_text.innerHTML = '';
@@ -87,6 +86,7 @@ window.addEventListener('load', function () {
     function main() {
         console.log("main_call");
 
+        if (end_flg) return;
         if (mainLoopPending) return;
         mainLoopPending = true;
 
@@ -203,7 +203,7 @@ window.addEventListener('load', function () {
                 if (tagget_str[1] === "none") {
                     $('#select1').addClass('none');
                 } else {
-                    select_num1 = tagget_str[1];
+                    select_num1 = Number(tagget_str[1]);
                     select1.addEventListener('click', function () {
                         scene_cnt = select_num1;
                         line_cnt = 0;
@@ -221,7 +221,7 @@ window.addEventListener('load', function () {
                 if (tagget_str[1] === "none") {
                     $('#select2').addClass('none');
                 } else {
-                    select_num2 = tagget_str[1];
+                    select_num2 = Number(tagget_str[1]);
                     select2.addEventListener('click', function () {
                         scene_cnt = select_num2;
                         line_cnt = 0;
@@ -239,7 +239,7 @@ window.addEventListener('load', function () {
                 if (tagget_str[1] === "none") {
                     $('#select3').addClass('none');
                 } else {
-                    select_num3 = tagget_str[1];
+                    select_num3 = Number(tagget_str[1]);
                     select3.addEventListener('click', function () {
                         scene_cnt = select_num3;
                         line_cnt = 0;
@@ -361,6 +361,7 @@ window.addEventListener('load', function () {
                 break;
 
             case 'end':
+                end_flg = true;
                 showEndingImage(Number(tagget_str[1]));
                 break;
         }
@@ -383,24 +384,21 @@ window.addEventListener('load', function () {
 
     //メッセージボックスクリックイベント
     mess_box.addEventListener('click', function () {
-        if (end_flg) return;
-        if (mswin_flg) {
-            if (!waitingForClick) {
-                //文字送り中クリック→全文表示
-                clearTimeout(textTimer);
-                mess_text.innerHTML = currentMessage + '<span class="blink-text"><br>▼</span>';
-                waitingForClick = true;
-            } else {
-                //文字送り終了後次の行へ
-                line_cnt++;
-                if (line_cnt >= text[scene_cnt].length) {
-                    line_cnt = 0;
-                }
-                // 行をパースしてタグ＋文字を分離
-                split_chars = parseLine(text[scene_cnt][line_cnt]);
-                mess_text.innerHTML = '';
-                main();
+        if (!waitingForClick) {
+            //文字送り中クリック→全文表示
+            clearTimeout(textTimer);
+            mess_text.innerHTML = currentMessage + '<span class="blink-text"><br>▼</span>';
+            waitingForClick = true;
+        } else {
+            //文字送り終了後次の行へ
+            line_cnt++;
+            if (line_cnt >= text[scene_cnt].length) {
+                line_cnt = 0;
             }
+            // 行をパースしてタグ＋文字を分離
+            split_chars = parseLine(text[scene_cnt][line_cnt]);
+            mess_text.innerHTML = '';
+            main();
         }
     });
 
@@ -419,14 +417,10 @@ window.addEventListener('load', function () {
         console.log(`現在の好感度 - あど: ${adoLove}, かみらい: ${kamiLove}`);
     }
 
-
     function saveLove() {
         sessionStorage.setItem('adoLove', adoLove);
         sessionStorage.setItem('kamiLove', kamiLove);
     }
-
-
-
 
     //エンディングシーン生成用
     function goEnding(num) {
@@ -438,28 +432,40 @@ window.addEventListener('load', function () {
     }
 
     function showEndingImage(num) {
+        //end_flg = true;
+        if (textTimer) clearTimeout(textTimer);
+
         // UIを非表示
-        document.getElementById('messbox').classList.add('none');
-        document.getElementById('textbox').classList.add('none');
-        $('.namebox').addClass('none');
+        ['messbox', 'textbox', 'namebox'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('none');
+        });
 
-        const bg = document.getElementById('bgimg');
-        // エンディング画像セット＆透明
-        bg.src = `img/end${num}.jpg`;
+        // オーバーレイ画像を作成
+        const overlay = document.getElementById('ending-overlay');
+        overlay.innerHTML = ""; // 古い画像を消す
 
-        // 少し遅延してフェードイン
+        const img = document.createElement('img');
+        img.src = `img/end${num}.jpg`;  // ← ここを分岐で差し替え
+        overlay.appendChild(img);
+
+        // 画像が読み込まれてからフェードイン
+        requestAnimationFrame(() => {
+            overlay.style.opacity = "1";
+        });
+
+        // 5秒後にスタート画面へ戻る
         setTimeout(() => {
-            bg.style.opacity = '1';
-        }, 50);
-
-        // 表示時間 5秒後にそのままスタート画面へ
-        setTimeout(() => {
-            bg.src = 'img/bg0.jpg';
-            showStartMenu();  // スタート画面表示
+            //overlay.style.opacity = "0"; //スタートメニューもフェードインしたかったら入れる
+            showStartMenu();
+            setTimeout(() => overlay.innerHTML = "", 1200); // アニメ後に削除
         }, 5000);
     }
 
     function showStartMenu() {
+        //背景リセット
+        document.getElementById('bgimg').src = 'img/bg0.jpg';
+        //スタートメニュー再表示
         const menu = document.getElementById('menu');
         menu.style.display = 'flex';
     }

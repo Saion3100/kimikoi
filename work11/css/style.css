@@ -9,7 +9,7 @@ body {
     margin: 0;
     padding: 0;
     color: #000;
-    background-color: #fff;
+    background-color: #eba2a2;
     font-family: "Zen Kurenaido", sans-serif;
     font-style: normal;
     font-weight: 600;
@@ -280,7 +280,24 @@ body {
     animation-timing-function: ease;
 }
 
-.fadein-ending {
-    transition: opacity 3s ease;
+#ending-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
     opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.2s ease;
+}
+
+#ending-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ending-overlay.show {
+    opacity: 1;
 }
