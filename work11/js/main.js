@@ -253,9 +253,6 @@ window.addEventListener('load', function () {
                     });
                 }
                 break;
-            case 'break':
-                mess_text.innerHTML += '<br>';
-                break;
             case 'skip':
                 scene_cnt = Number(tagget_str[1]);
                 line_cnt = 0;
