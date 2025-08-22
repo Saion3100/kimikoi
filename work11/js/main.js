@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
     var text = window.ScenarioData.text;//シナリオデータ
     const startBtn = document.getElementById('startBtn');//スタートボタン
     var mess_box = document.getElementById('textbox');
-    const namebox = document.getElementById('namebox');
+    var namebox = document.getElementById('namebox');
     var mess_text = document.getElementById('text');
     const nameInputScreen = document.getElementById('nameInputScreen');//名前入力画面取得
     const nameConfirmBtn = document.getElementById('nameConfirmBtn');//確認ボタン
@@ -73,6 +73,7 @@ window.addEventListener('load', function () {
         nameInputScreen.classList.add('none');//入力画面非表示
         messbox.classList.remove('none');
         textbox.classList.remove('none');
+        namebox.classList.remove('none');
         //シナリオ初期化
         end_flg = false;
         line_cnt = 0;
