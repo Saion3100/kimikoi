@@ -141,7 +141,7 @@ window.addEventListener('load', function () {
 
         // セリフ表示初期化
         mess_text.innerHTML = '';
-        currentMessage = message;
+        currentMessage = message.replace(/主人公/g, playerName);;
         charIndex = 0;
         waitingForClick = false;
 
@@ -344,18 +344,25 @@ window.addEventListener('load', function () {
                 adjustLove(target, amount);
                 break;
             case 'checkEnd':
-                // 好感度によってエンディングへジャンプ
-                if (adoLove >= 20 && kamiLove >= 20) {
-                    goEnding(5); // ハーレム
-                } else if (adoLove >= 15) {
-                    goEnding(3); // あどエンド
-                } else if (kamiLove >= 15) {
-                    goEnding(4); // かみらいエンド
-                } else if (adoLove < 10 && kamiLove < 10) {
-                    goEnding(2); // ボッチエンド
+                // 好感度によってエンディングシナリオへジャンプ
+                if (adoLove >= 7 && kamiLove >= 7) {
+                    scene_cnt = 110;
+                    //goEnding(5); // ハーレム
+                } else if (adoLove >= 10) {
+                    scene_cnt = 108;
+                    //goEnding(3); // あどエンド
+                } else if (kamiLove >= 10) {
+                    scene_cnt = 109;
+                    //goEnding(4); // かみらいエンド
+                } else if (adoLove < 5 && kamiLove < 5) {
+                    scene_cnt = 107;
+                    //goEnding(2); // ボッチエンド
                 } else {
                     goEnding(1); // エラーエンド
                 }
+                line_cnt = 0;
+                split_chars = parseLine(text[scene_cnt][line_cnt]);
+                main();
                 break;
 
             case 'end':
