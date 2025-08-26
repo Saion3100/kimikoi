@@ -7,7 +7,6 @@ window.addEventListener('load', function () {
         $('#select3').removeClass('none');
     };
 
-
     var text = window.ScenarioData.text;//シナリオデータ
     const startBtn = document.getElementById('startBtn');//スタートボタン
     var mess_box = document.getElementById('textbox');
@@ -37,6 +36,10 @@ window.addEventListener('load', function () {
     let skip_flg = false;//skipタグ使用中かどうか
     let mainLoopPending = false;   // mainが予約中かどうか
     let end_flg = false;//エンディングへ入ったかどうか
+
+    // 演出制御フラグ
+    let isAnimating = false;   // 演出（fadeOutIn等）実行中フラグ
+    let deferAdvance = false;  // 自動で次行へ進むのを保留する（演出待ち用）
 
     // ＜ゲーム内変数＞
     let playerName = '';//主人公名前保存用
@@ -96,10 +99,17 @@ window.addEventListener('load', function () {
             const tag = split_chars.shift();
             const tag_str = tag.slice(1, -1); // < > を除去
             processTag(tag_str);
+            // processTag 内の fadeOutIn_bg は isAnimating/deferAdvance を立てる
         }
 
-        //タグのみ又はsplit_charsが空なら次の行へ進む
+        //タグのみ又はsplit_charsが空なら次の行へ進む（ただし演出待ちなら進めない）
         if (!split_chars.length) {
+            if (deferAdvance || isAnimating) {
+                // 演出待ち中はここで自動進行を止める（fadeOutIn が終わったら自分で main を呼ぶ）
+                mainLoopPending = false;
+                return;
+            }
+
             line_cnt++;
             if (line_cnt >= text[scene_cnt].length) {
                 line_cnt = 0;
@@ -141,7 +151,7 @@ window.addEventListener('load', function () {
 
         // セリフ表示初期化
         mess_text.innerHTML = '';
-        currentMessage = message.replace(/主人公/g, playerName);;
+        currentMessage = message.replace(/主人公/g, playerName);
         charIndex = 0;
         waitingForClick = false;
 
@@ -153,8 +163,10 @@ window.addEventListener('load', function () {
                 mainLoopPending = false;
             }, 0);
         } else {
-            // 文字送り開始
-            textAdvance();
+            // 演出中は文字送り開始させない
+            if (!isAnimating) {
+                textAdvance();
+            }
             mainLoopPending = false;
         }
     }
@@ -205,7 +217,8 @@ window.addEventListener('load', function () {
                     $('#select1').addClass('none');
                 } else {
                     select_num1 = Number(tagget_str[1]);
-                    select1.addEventListener('click', function () {
+                    // addEventListener を何度も登録すると重複するので onclick で上書きする
+                    select1.onclick = function () {
                         scene_cnt = select_num1;
                         line_cnt = 0;
                         $('.selectBox').removeClass('show');
@@ -215,7 +228,7 @@ window.addEventListener('load', function () {
                         mess_text.innerHTML = '';
                         skip_flg = true; // スキップ直後として扱う
                         main();
-                    });
+                    };
                 }
                 break;
             case 'select2':
@@ -223,7 +236,7 @@ window.addEventListener('load', function () {
                     $('#select2').addClass('none');
                 } else {
                     select_num2 = Number(tagget_str[1]);
-                    select2.addEventListener('click', function () {
+                    select2.onclick = function () {
                         scene_cnt = select_num2;
                         line_cnt = 0;
                         $('.selectBox').removeClass('show');
@@ -233,7 +246,7 @@ window.addEventListener('load', function () {
                         mess_text.innerHTML = '';
                         skip_flg = true; // スキップ直後として扱う
                         main();
-                    });
+                    };
                 }
                 break;
             case 'select3':
@@ -241,7 +254,7 @@ window.addEventListener('load', function () {
                     $('#select3').addClass('none');
                 } else {
                     select_num3 = Number(tagget_str[1]);
-                    select3.addEventListener('click', function () {
+                    select3.onclick = function () {
                         scene_cnt = select_num3;
                         line_cnt = 0;
                         $('.selectBox').removeClass('show');
@@ -251,7 +264,7 @@ window.addEventListener('load', function () {
                         mess_text.innerHTML = '';
                         skip_flg = true; // スキップ直後として扱う
                         main();
-                    });
+                    };
                 }
                 break;
             case 'skip':
@@ -318,6 +331,11 @@ window.addEventListener('load', function () {
                 setTimeout(fadeOut_item_remove, 500);
                 break;
             case 'fadeOutIn_bg':
+                // 演出が始まったらクリック/自動進行は禁止
+                isAnimating = true;
+                deferAdvance = true; // main の自動進行を止める（演出が終わるまで）
+                waitingForClick = false;
+
                 function fadeOutIn_bg_change() {
                     document.getElementById('bgimg').src = 'img/bg' + tagget_str[1] + '.jpg';
                 }
@@ -325,7 +343,21 @@ window.addEventListener('load', function () {
                     $('#bgimg').removeClass('fadeoutin');
                     $('#messbox').removeClass('fadeout-fast');
                     $('#textbox').removeClass('none');
-                    $('#textbox').trigger('click');
+
+                    // 演出終了
+                    isAnimating = false;
+                    deferAdvance = false;
+
+                    line_cnt++;
+                    if (line_cnt >= text[scene_cnt].length) {
+                        line_cnt = 0;
+                    }
+                    split_chars = parseLine(text[scene_cnt][line_cnt]);
+
+                    // main を再開
+                    setTimeout(() => {
+                        main();
+                    }, 0);
                 }
                 $('#messbox').addClass('fadeout-fast');
                 $('#textbox').addClass('none');
@@ -344,25 +376,28 @@ window.addEventListener('load', function () {
                 adjustLove(target, amount);
                 break;
             case 'checkEnd':
+                console.log("checkEnd_call", adoLove, kamiLove);
                 // 好感度によってエンディングシナリオへジャンプ
                 if (adoLove >= 7 && kamiLove >= 7) {
+                    console.log("ハーレム");
                     scene_cnt = 110;
-                    //goEnding(5); // ハーレム
                 } else if (adoLove >= 10) {
+                    console.log("あど");
                     scene_cnt = 108;
-                    //goEnding(3); // あどエンド
                 } else if (kamiLove >= 10) {
+                    console.log("かみらい");
                     scene_cnt = 109;
-                    //goEnding(4); // かみらいエンド
                 } else if (adoLove < 5 && kamiLove < 5) {
+                    console.log("バット");
                     scene_cnt = 107;
-                    //goEnding(2); // ボッチエンド
                 } else {
                     goEnding(1); // エラーエンド
+                    break;
                 }
                 line_cnt = 0;
+                // 演出がなく普通に次の行をmainで処理する
                 split_chars = parseLine(text[scene_cnt][line_cnt]);
-                main();
+                main(); // 新しいシナリオ行を処理
                 break;
 
             case 'end':
@@ -371,8 +406,6 @@ window.addEventListener('load', function () {
                 break;
         }
     }
-
-
 
     // 文字送り用メイン関数（1文字ずつ表示）
     function textAdvance() {
@@ -389,6 +422,9 @@ window.addEventListener('load', function () {
 
     //メッセージボックスクリックイベント
     mess_box.addEventListener('click', function () {
+        // 演出中はクリックを無視する
+        if (isAnimating) return;
+
         if (!waitingForClick) {
             //文字送り中クリック→全文表示
             clearTimeout(textTimer);
@@ -437,7 +473,6 @@ window.addEventListener('load', function () {
     }
 
     function showEndingImage(num) {
-        //end_flg = true;
         if (textTimer) clearTimeout(textTimer);
 
         // UIを非表示
