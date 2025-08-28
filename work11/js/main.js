@@ -387,12 +387,10 @@ window.addEventListener('load', function () {
                 } else if (kamiLove >= 10) {
                     //console.log("かみらい");
                     scene_cnt = 109;
-                } else if (adoLove < 5 && kamiLove < 5) {
+                } else {
+                    //if (adoLove < 5 && kamiLove < 5)
                     //console.log("バット");
                     scene_cnt = 107;
-                } else {
-                    goEnding(1); // エラーエンド
-                    break;
                 }
                 line_cnt = 0;
                 // 演出がなく普通に次の行をmainで処理する
