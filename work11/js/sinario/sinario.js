@@ -848,7 +848,7 @@ window.ScenarioData = {
         "主人公:なんか、お母さんみたいですね",
         "<like ado -1><chara 1 12>安渡:あなたのような子を産んだ覚えはないですね",
         "<chara 1 11>安渡:次からは気を付けてくださいね",
-        "<fadeOut_chara 1 11>主人公:Yse,ma'am.",
+        "<fadeOut_chara 1 11>主人公:イェッサー",
         "<skip 81>"
     ],
     [
